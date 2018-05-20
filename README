@@ -7,7 +7,36 @@ Brodschi Mihai
 20.05.2018
 
 
-				README
+- get_split_as_indexes
+	In functie de split_index si split_value, parcurgem vectorul 
+de vectori samples, iar valorile samples[i][split_index] egale sau 
+mai mici decat split_value le stocam intr-un vector si elementele mai 
+mari intr-un alt vector. Returnam perechea formata din cei doi 
+vectori.
 
+- same_class
+	Comparam 2 cate 2 elementele din samples, astfel daca doua 
+sunt diferite, testele nu au aceeasi clasa.
 
+- random_dimensions
+	Folosim un hashtable (implementat prin unordered_map) si 
+random_device (pentru o precizie mai buna, deoarece acesta 
+nu necesita un seed).
+	Cream o bucla care se opreste cand iteratorul atinge sqrt(size). 
+Daca valoarea aleatoare gasita este 0, size, sau se afla deja in 
+hashtable, extragem o alta valoare aleatoare, altfel, introducem 
+valoarea in hashtable.
 
+- get_random_samples
+	Implementarea este asemenea functiei random_dimensions, doar ca 
+in acest caz adaugam in hashtable valori aleatoare din samples.
+
+- compute_unique
+	Folosim hashtable pentru a elimina duplicatele si stocam valorile 
+unice intr-un vector.
+
+- make_leaf
+	Setam nodul ca fiind de tip frunza. Daca toate testele au aceeasi 
+clasa, nodul este deja frunza.
+	Parcurgem samples cu un hashtable pentru a gasi clasa majoritara. 
+Daca doua clase apar la fel de des, o luam pe prima.

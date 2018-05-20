@@ -52,14 +52,14 @@ void Node::make_leaf(const vector<vector<int>> &samples,
     for (int i = 0; i < samples.size(); i++) {
         hashTable[samples[i][0]]++;
     }
-    int digit, maxApparitionCount = 0;
+    int leaf, maxApparitionCount = 0;
     for (auto it = hashTable.begin(); it != hashTable.end(); it++) {
         if (it->second > maxApparitionCount) {
             maxApparitionCount = it->second;
-            digit = it->first;
+            leaf = it->first;
         }
     }
-    result = digit;
+    result = leaf;
 }
 
 pair<int, int> find_best_split(const vector<vector<int>> &samples,
