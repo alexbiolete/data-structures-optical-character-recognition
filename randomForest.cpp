@@ -11,6 +11,7 @@ using std::vector;
 using std::pair;
 using std::string;
 using std::mt19937;
+using std::unordered_map;
 
 vector<vector<int>> get_random_samples(const vector<vector<int>> &samples,
                                        int num_to_return) {
@@ -68,5 +69,14 @@ int RandomForest::predict(const vector<int> &image) {
     // Va intoarce cea mai probabila prezicere pentru testul din argument
     // se va interoga fiecare Tree si se va considera raspunsul final ca
     // fiind cel majoritar
-    return 0;
+    unordered_map<int, int> apparitions;
+    for (int i = 0; i < num_trees; i++)
+        apparitions[trees[i].predict(image)]++;
+    int prediction, maxApparitionCount = 0;
+    for (auto it = apparitions.begin(); it != apparitions.end(); it++)
+        if (it->second > maxApparitionCount) {
+            maxApparitionCount = it->second;
+            prediction = it->first;
+        }
+    return prediction;
 }

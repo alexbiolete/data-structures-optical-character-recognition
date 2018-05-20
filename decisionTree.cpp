@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <random>
 
 using std::string;
 using std::pair;
@@ -70,22 +71,72 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
     // pair-ul intors este format din (split_index, split_value)
 
     int splitIndex = -1, splitValue = -1;
+    int crtValue;
+    float IG, IGmax = 0.0f, aux;
+    vector<int> dimensionValues, leftSplit, rightSplit;
+    pair<vector<int>, vector<int>> splits;
+    for (int i = 0; i < dimensionNum.size(); i++) {
+        crtValue = 0;
+        dimensionValues = compute_unique(samples, dimensionNum[i]);
+        for (int j = 0; j < dimensionValues.size(); j++)
+            crtValue += dimensionValues[j];
+        crtValue /= dimensionValues.size();
+        splits = get_split_as_indexes(samples, dimensionNum[i], crtValue);
+        leftSplit = splits.first;
+        rightSplit = splits.second;
+        if (leftSplit.size() && rightSplit.size()) {
+            aux = (float)leftSplit.size();
+            IG = get_entropy_by_indexes(samples, leftSplit) * aux;
+            aux = (float)rightSplit.size();
+            IG += get_entropy_by_indexes(samples, rightSplit) * aux;
+            IG /= samples.size();
+            IG = get_entropy(samples) - IG;
+            if (IG > IGmax) {
+                IGmax = IG;
+                splitValue = crtValue;
+                splitIndex = dimensionNum[i];
+            }
+        }
+    }
     return pair<int, int>(splitIndex, splitValue);
 }
 
 void Node::train(const vector<vector<int>> &samples) {
     // TODO(you)
-    // Antreneaza nodul curent si copii sai, daca e nevoie
+    // Antreneaza nodul curent si copiii sai, daca e nevoie
     // 1) verifica daca toate testele primite au aceeasi clasa (raspuns)
     // Daca da, acest nod devine frunza, altfel continua algoritmul.
     // 2) Daca nu exista niciun split valid, acest nod devine frunza. Altfel,
     // ia cel mai bun split si continua recursiv
+    if (same_class(samples)) {
+        this->make_leaf(samples, true);
+        return;
+    }
+    vector<int> dimensions = random_dimensions(samples[0].size());
+    pair<int, int> data = find_best_split(samples, dimensions);
+    split_index = data.first;
+    split_value = data.second;
+    if (split_index == -1 && split_value == -1) {
+        this->make_leaf(samples, false);
+        return;
+    }
+    pair<vector<vector<int>>, vector<vector<int>>> splits;
+    splits = split(samples, split_index, split_value);
+    left->train(splits.first);
+    right->train(splits.second);
 }
 
 int Node::predict(const vector<int> &image) const {
     // TODO(you)
     // Intoarce rezultatul prezis de catre decision tree
-    return 0;
+    int prediction = result;
+    if (!is_leaf) {
+        if (image[split_index] > split_value)
+            prediction = right->predict(image);
+        else
+            prediction = left->predict(image);
+    }
+    return prediction;
 }
 
 bool same_class(const vector<vector<int>> &samples) {
@@ -118,7 +169,17 @@ float get_entropy_by_indexes(const vector<vector<int>> &samples,
     // Intoarce entropia subsetului din setul de teste total(samples)
     // Cu conditia ca subsetul sa contina testele ale caror indecsi se gasesc in
     // vectorul index (Se considera doar liniile din vectorul index)
-    return 0.0f;
+    float entropy = 0.0f;
+    int n = index.size();
+    unordered_map<int, int> apparitions;
+    for (int i = 0; i < n; i++)
+        apparitions[samples[index[i]][0]]++;
+    for (auto it = apparitions.begin(); it != apparitions.end(); it++) {
+        float p = (float)(it->second / n);
+        if (it->second)
+            entropy -= p * (std::log(p) / std::log(2));
+    }
+    return entropy;
 }
 
 vector<int> compute_unique(const vector<vector<int>> &samples, const int col) {
