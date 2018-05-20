@@ -89,7 +89,7 @@ pair<int, int> find_best_split(const vector<vector<int>> &samples,
             IG = get_entropy_by_indexes(samples, leftSplit) * aux;
             aux = (float)rightSplit.size();
             IG += get_entropy_by_indexes(samples, rightSplit) * aux;
-            IG /= samples.size();
+            IG /= (float)samples.size();
             IG = get_entropy(samples) - IG;
             if (IG > IGmax) {
                 IGmax = IG;
@@ -133,7 +133,7 @@ int Node::predict(const vector<int> &image) const {
     // Intoarce rezultatul prezis de catre decision tree
     int prediction = result;
     if (!is_leaf) {
-        if (image[split_index] > split_value)
+        if (image[split_index - 1] > split_value)
             prediction = right->predict(image);
         else
             prediction = left->predict(image);
@@ -177,7 +177,7 @@ float get_entropy_by_indexes(const vector<vector<int>> &samples,
     for (int i = 0; i < n; i++)
         apparitions[samples[index[i]][0]]++;
     for (auto it = apparitions.begin(); it != apparitions.end(); it++) {
-        float p = (float)(it->second / n);
+        float p = (float)(it->second) / (float)n;
         if (it->second)
             entropy -= p * (std::log(p) / std::log(2));
     }
