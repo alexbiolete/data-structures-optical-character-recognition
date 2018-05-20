@@ -47,7 +47,7 @@ in acest caz adaugam in hashtable valori aleatoare din samples.
     Folosim hashtable pentru a elimina duplicatele si stocam valorile 
 unice intr-un vector.
 
--> make_leaf:
+-> Node::make_leaf:
 
     Setam nodul ca fiind de tip frunza. Daca toate testele au aceeasi 
 clasa, nodul este deja frunza.
