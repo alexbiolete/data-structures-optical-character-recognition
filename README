@@ -7,36 +7,113 @@ Brodschi Mihai
 20.05.2018
 
 
-- get_split_as_indexes
-	In functie de split_index si split_value, parcurgem vectorul 
+				    README
+
+
+Am impartit sarcinile astfel:
+
+Biolete Alexandru:
+
+-> get_split_as_indexes:
+
+    In functie de split_index si split_value, parcurgem vectorul 
 de vectori samples, iar valorile samples[i][split_index] egale sau 
 mai mici decat split_value le stocam intr-un vector si elementele mai 
 mari intr-un alt vector. Returnam perechea formata din cei doi 
 vectori.
 
-- same_class
-	Comparam 2 cate 2 elementele din samples, astfel daca doua 
+-> same_class:
+
+    Comparam 2 cate 2 elementele din samples, astfel daca doua 
 sunt diferite, testele nu au aceeasi clasa.
 
-- random_dimensions
-	Folosim un hashtable (implementat prin unordered_map) si 
+-> random_dimensions:
+
+    Folosim un hashtable (implementat prin unordered_map) si 
 random_device (pentru o precizie mai buna, deoarece acesta 
 nu necesita un seed).
-	Cream o bucla care se opreste cand iteratorul atinge sqrt(size). 
+    Cream o bucla care se opreste cand iteratorul atinge sqrt(size). 
 Daca valoarea aleatoare gasita este 0, size, sau se afla deja in 
 hashtable, extragem o alta valoare aleatoare, altfel, introducem 
 valoarea in hashtable.
 
-- get_random_samples
-	Implementarea este asemenea functiei random_dimensions, doar ca 
+-> get_random_samples:
+
+    Implementarea este asemenea functiei random_dimensions, doar ca 
 in acest caz adaugam in hashtable valori aleatoare din samples.
 
-- compute_unique
-	Folosim hashtable pentru a elimina duplicatele si stocam valorile 
+-> compute_unique:
+
+    Folosim hashtable pentru a elimina duplicatele si stocam valorile 
 unice intr-un vector.
 
-- make_leaf
-	Setam nodul ca fiind de tip frunza. Daca toate testele au aceeasi 
+-> make_leaf:
+
+    Setam nodul ca fiind de tip frunza. Daca toate testele au aceeasi 
 clasa, nodul este deja frunza.
-	Parcurgem samples cu un hashtable pentru a gasi clasa majoritara. 
+    Parcurgem samples cu un hashtable pentru a gasi clasa majoritara. 
 Daca doua clase apar la fel de des, o luam pe prima.
+
+
+Brodschi Mihai:
+
+-> find_best_split:
+
+    Pentru fiecare splitIndex din vectorul dat, se retin valorile unice
+care apar in setul de teste pe coloana splitIndex si se calculeaza media
+lor aritmetica, aceasta reprezentand splitValue. Se determina folosind
+get_split_as_indexes indecsii testelor care corespund copilului din
+stanga, respectiv celui din dreapta. Daca ambilor copii le corespund
+seturi nenule, se calculeaza Information Gain pentru splitul curent. Daca
+Information Gain este mai mare decat maximul inregistrat, se actualizeaza
+maximul si se pastreaza splitIndex si splitValue curente in variabilele
+ce vor fi intoarse. La final, functia va intoarce o pereche alcatuita din
+splitIndex si splitValue corespunzatoare unui Information Gain maxim.
+Daca tuturor valorilor din vector le corespund split-uri invalide,
+perechea intoarsa va fi <-1, -1>.
+
+-> train:
+
+    Daca toate testele primite au aceeasi clasa, nodul curent este facut
+frunza folosind make_leaf cu argumentul is_single_class = true si se
+incheie executia functiei. Altfel, se genereaza folosind random_dimensions
+un vector cu sqrt(nr de dimensiuni al testului) valori splitIndex aleatoare.
+Dintre aceste valori se alege folosind find_best_split cea care da un IG
+maxim si se obtine si splitValue-ul corespunzator. Se retin acesti doi
+parametri in nodul curent. Daca ambii sunt egali cu -1, inseamna ca nu
+s-a gasit niciun split valid si nodul curent este facut frunza folosind
+make_leaf cu argumentul is_single_class = false, dupa care se incheie executia
+functiei. Altfel, se creeaza copiii nodului, se calculeaza folosind split
+seturile de teste corespunzatoare fiecaruia si se apeleaza recursiv train
+pentru fiecare copil cu seturile respective.
+
+-> Node::predict:
+
+    Valoarea intoarsa de functie este retinuta in variabila prediction.
+Aceasta este initializata cu result-ul nodului curent. Daca nodul curent e o
+frunza, nu mai trebuie facut nimic si se intoarce result-ul. Daca nu este o
+frunza, se modifica prediction astfel:
+ - in cazul in care campul din input corespunzator indicelui pastrat in nod 
+este mai mare decat valoarea pastrata in nod, prediction este dat de rezultatul
+lui predict aplicat copilului din dreapta;
+ - altfel, prediction este dat de rezultatul lui predict aplicat copilului din
+stanga.
+
+-> get_entropy_by_indexes:
+
+    Se initializeaza entropia cu 0. Pentru fiecare din clasele distincte care
+apar in testele corespunzatoare indicilor, se pastreaza numarul de aparitii
+intr-un hashtable. Pentru fiecare intrare din hashtable, se calculeaza
+p = nr_aparitii / nr_total_teste si se scade din entropie p * log_2(p).
+
+-> RandomForest::predict:
+
+    Se calculeaza rezultatul predictiei fiecarui Decision Tree si se retin
+rezultatele distincte si numarul lor de aparitii intr-un hashtable. Se
+pastreaza numarul maxim de aparitii intr-o variabila initializata cu 0.
+Se itereaza prin hashtable si daca se gaseste un rezultat cu numarul de
+aparitii mai mare decat maximul curent, se actualizeaza maximul si se retine
+rezultatul corespunzator lui intr-o variabila prediction. La final, se intoarce
+prediction.
+
+
