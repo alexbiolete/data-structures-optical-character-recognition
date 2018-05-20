@@ -24,8 +24,9 @@ vectori.
 
 -> same_class:
 
-    Comparam 2 cate 2 elementele din samples, astfel daca doua 
-sunt diferite, testele nu au aceeasi clasa.
+    Comparam 2 cate 2 elementele din samples. Daca apar diferente, 
+testele nu au aceeasi clasa, altfel, toate elementele sunt identice, 
+asadar, au aceeasi clasa.
 
 -> random_dimensions:
 
