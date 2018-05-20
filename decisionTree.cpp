@@ -122,6 +122,8 @@ void Node::train(const vector<vector<int>> &samples) {
     }
     pair<vector<vector<int>>, vector<vector<int>>> splits;
     splits = split(samples, split_index, split_value);
+    left = make_shared<Node>(Node());
+    right = make_shared<Node>(Node());
     left->train(splits.first);
     right->train(splits.second);
 }
